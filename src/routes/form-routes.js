@@ -1,11 +1,12 @@
 const express = require('express');
-const router = express.Router();
+const api = express.Router();
 
 const formController = require('../controllers/form-controller');
 
-router.get('/formInfo', formController.getValuesForm);
+api.get('/formInfo', formController.getValuesForm);
+api.post('/saveForm', formController.createForm);
 
 
 
 
-module.exports = router
+module.exports = api;
