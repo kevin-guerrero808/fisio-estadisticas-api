@@ -26,12 +26,12 @@ const createRefreshToken = (user) => {
     return jwt.sign(payload, JWT_SECRET_KEY)
 }
 
-const decoded = (token) => {
+const decode = (token) => {
     return jwt.decode(token, JWT_SECRET_KEY, true)
 }
 
 module.exports = {
     createAccessToken,
     createRefreshToken,
-    decoded
+    decode
 }

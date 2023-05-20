@@ -1,8 +1,22 @@
 const axios = require('axios')
 const User = require('../models/user'); // Importamos el modelo de usuario
-const mailgun = require('../utils/mail-gun')
+const bcrypt = require('bcryptjs')
+// const mailgun = require('../utils/mail-gun')
 
 const userController = {
+    getMe: async (req, res) => {
+        try {
+            const { user_id } = req.user;
+            const response = await User.findById(user_id)
+            if (!response) {
+                return res.status(400).send({ msg: "Can't be founded user"})
+            }
+            res.status(200).send(response)
+        } catch (error) {
+            res.status(500).send({ msg: 'Error on the server'})
+        }
+    },
+
     getAllUsers: async (req, res) => {
         try {
             const users = await User.find();
@@ -27,18 +41,31 @@ const userController = {
     },
 
     createUser: async (req, res) => {
-        const { firstName, lastName, email, password, role, active, avatar } = req.body; 
-        const newUser = new User({ firstName, lastName, email, password, role, active, avatar }); 
         try {
-            await newUser.save(); 
-            res.send(newUser); 
+            const { firstName, lastName, email, password, role } = req.body; 
+            const newUser = new User({ firstName, lastName, email, password, role, active: false }); 
 
-            mailgun.mailgunSendCorreo({
-                from: "Fisio",
-                to: [newUser.email],
-                subject: "Hello",
-                text: "Testing some Mailgun awesomness!",
-            })
+            const salt = await bcrypt.genSalt(10)
+            const hashedPassword = await bcrypt.hash(password, salt)
+            newUser.password = hashedPassword;
+
+            if (req.files.avatar) {
+                const imagePath = image.getFilePath(req.files.avatar)
+                newUser.avatar = imagePath
+            }
+
+            const userStored = await newUser.save();
+            res.send({
+                ...userStored.toObject(),
+                password: null
+            }); 
+
+            // mailgun.mailgunSendCorreo({
+            //     from: "Fisio",
+            //     to: [newUser.email],
+            //     subject: "Hello",
+            //     text: "Testing some Mailgun awesomness!",
+            // })
         } catch (error) {
             res.status(500).send(error.message); 
         }
@@ -46,13 +73,24 @@ const userController = {
 
     updateUser: async (req, res) => {
         const userId = req.params.id; 
-        const updates = req.body; 
+        const userData = req.body; 
         try {
-            const user = await User.findByIdAndUpdate(userId, updates, { new: true }); 
-            if (!user) { 
-                return res.status(404).send('Usuario no encontrado');
+            if ( userData.password) {
+                const salt = bcrypt.genSaltSync(10)
+                const hashedPassword = bcrypt.hashSync(userData.password, salt)
+                userData.password = hashedPassword;
+            } else {
+                delete userData.password;
             }
-            res.send(user); 
+
+            if (req.files && req.files.avatar) {
+                const imagePath = image.getFilePath(req.files.avatar)
+                userData.avatar = imagePath
+            }
+
+            await User.findByIdAndUpdate({ _id: userId }, userData);
+
+            res.status(200).send({ msg: "success updated"})
         } catch (error) {
             res.status(500).send(error.message); 
         }
@@ -60,21 +98,17 @@ const userController = {
 
     deleteUser: async (req, res) => {
         const userId = req.params.id; 
-        try {
-            const user = await User.findByIdAndDelete(userId);
-            if (!user) {
-                if (!user) {
-                    return res.status(404).send('Usuario no encontrado');
-                }
-                res.send('Usuario eliminado correctamente');
+        User.findByIdAndDelete(userId)
+        .then(user => {
+            if(!user) {
+                res.send('No found user');
             }
-        } catch (error) {
-                res.status(500).send(error.message); 
-            }
+        })
+        .catch(error => {
+            res.send('Error to find user');
+        });
     },
-    
-   
-    }
+}
 
 
-    module.exports = userController;
+module.exports = userController;

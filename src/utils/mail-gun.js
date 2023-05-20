@@ -1,7 +1,7 @@
 const formData = require('form-data');
 const Mailgun = require('mailgun-js');
-const API_KEY = require('../../confidencial-constants').API_KEY;
-const DOMAIN = require('../../confidencial-constants').DOMAIN;
+const API_KEY = require('../../constants').API_KEY;
+const DOMAIN = require('../../constants').DOMAIN;
 
 const mailgunClient = new Mailgun(formData);
 const mg = mailgunClient.client({
