@@ -14,9 +14,9 @@ if (!fs.existsSync(uploadDir)) {
 
 const md_upload = multiparty({ uploadDir : './uploads/avatar' })
 
-api.get('/me', [middleware_authentication.ensureAuth], userController.getMe)
-api.get('/', [middleware_authentication.ensureAuth], userController.getAllUsers)
-api.get('/:id', [middleware_authentication.ensureAuth], userController.getUserById)
+api.get('/me', [middleware_authentication.ensureAuth], userController.getMe);
+api.get('/list', [middleware_authentication.ensureAuth, middleware_authentication.adminRole], userController.getAllUsers);
+api.get('/:id', [middleware_authentication.ensureAuth], userController.getUserById);
 api.post('/new',  userController.createUser);
 api.patch('/:id', [middleware_authentication.ensureAuth, md_upload], userController.updateUser);
 api.delete('/:id', [middleware_authentication.ensureAuth], userController.deleteUser);

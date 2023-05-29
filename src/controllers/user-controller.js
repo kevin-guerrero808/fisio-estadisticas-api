@@ -1,8 +1,21 @@
-const axios = require('axios')
+const axios = require('axios');
 const User = require('../models/user'); // Importamos el modelo de usuario
-const bcrypt = require('bcryptjs')
+const bcrypt = require('bcryptjs');
+const getMunicipalities = require('../services/colombiaOpenDataResources.service');
 // const mailgun = require('../utils/mail-gun')
 
+const isValidLocation = async (department, municipality) => {
+    try {
+        const municipalities = await getMunicipalities();
+        return municipalities.data.some(municipality => municipality.departamento === department && municipality === municipality);
+    } catch (error) {
+        console.log("error validando los departamentos");
+        return null;
+    }
+    
+
+    
+}
 const userController = {
     getMe: async (req, res) => {
         try {
@@ -42,11 +55,14 @@ const userController = {
 
     createUser: async (req, res) => {
         const userData = req.body; 
-        const newUser = new User({ ...userData, active: true }); 
-
-        
 
         try {
+            if (!(await isValidLocation(userData.department, userData.municipality))) {
+                throw new Error('Invalid department and municipality');
+            }
+
+            const newUser = new User({ ...userData, active: false }); 
+
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(userData.password, salt);
             newUser.password = hashedPassword;
