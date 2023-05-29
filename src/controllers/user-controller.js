@@ -61,7 +61,7 @@ const userController = {
                 throw new Error('Invalid department and municipality');
             }
 
-            const newUser = new User({ ...userData, active: false }); 
+            const newUser = new User({ ...userData, active: true }); 
 
             const salt = await bcrypt.genSalt(10);
             const hashedPassword = await bcrypt.hash(userData.password, salt);
