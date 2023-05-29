@@ -15,8 +15,7 @@ const md_upload = multiparty({ uploadDir: "./uploads/menu/icons" });
 const api = express.Router();
 
 api.post(
-  "/new",
-  [middleware_authentication.ensureAuth, md_upload],
+  "/new", [middleware_authentication.ensureAuth, middleware_authentication.adminRole, md_upload],
   MenuController.createMenu
 );
 

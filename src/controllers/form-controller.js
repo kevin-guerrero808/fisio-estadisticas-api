@@ -1,4 +1,6 @@
-const FormModel = require('../models/form')
+const { form,
+    formGroup,
+    formIndividual } = require('../models/form')
 const formValues = require('../utils/formOptions')
 
 const formController = {

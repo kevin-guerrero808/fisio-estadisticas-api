@@ -1,4 +1,5 @@
 const jwt = require("../utils/jwt");
+const userModel = require("../models/user")
 
 const ensureAuth = (req, res, next) => {
     const { authorization } = req.headers;
@@ -11,7 +12,7 @@ const ensureAuth = (req, res, next) => {
     const token = authorization.split(" ")[1];
     console.log("split", authorization.split(" "))
     try {
-        const payload = jwt.decoded(token);
+        const payload = jwt.decode(token);
         console.log("payload: ", payload);
         const { expiration_date } = payload;
         const currentTime = Date.now();
@@ -27,6 +28,22 @@ const ensureAuth = (req, res, next) => {
     }
 };
 
+const adminRole = async (req, res, next) => {
+    const { authorization } = req.headers;
+    const token = authorization.split(" ")[1];
+    try {
+        const payload = jwt.decode(token);
+        req.user = payload;
+        const user = await userModel.findById(payload.user_id);
+        console.log("usuario: ", user);
+        if (user.role != 'admin') return res.status(401).send({ msg: "no autorizado" });
+        next();
+    } catch (error) {
+        return res.status(401).send({ msg: "no autorizado" });
+    }
+}
+
 module.exports = {
     ensureAuth,
+    adminRole
 };

@@ -17,7 +17,7 @@ const md_upload = multiparty({ uploadDir : './uploads/avatar' })
 api.get('/me', [middleware_authentication.ensureAuth], userController.getMe)
 api.get('/', [middleware_authentication.ensureAuth], userController.getAllUsers)
 api.get('/:id', [middleware_authentication.ensureAuth], userController.getUserById)
-api.post('/', [middleware_authentication.ensureAuth, md_upload], userController.createUser);
+api.post('/new',  userController.createUser);
 api.patch('/:id', [middleware_authentication.ensureAuth, md_upload], userController.updateUser);
 api.delete('/:id', [middleware_authentication.ensureAuth], userController.deleteUser);
 

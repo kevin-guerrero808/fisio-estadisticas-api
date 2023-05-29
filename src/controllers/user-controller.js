@@ -42,7 +42,7 @@ const userController = {
 
     createUser: async (req, res) => {
         const userData = req.body; 
-        const newUser = new User({ ...userData, active: false }); 
+        const newUser = new User({ ...userData, active: true }); 
 
         
 

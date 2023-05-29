@@ -3,13 +3,14 @@ const Menu = require("../models/menu");
 const createMenu = async (req, res) => {
     try {
         const menuData = req.body;
-        if (!menuData.title || !menuData.path) {
+        if (!menuData.label || !menuData.path) {
             return res
                 .status(400)
                 .send({ msg: "El título y la ruta son campos obligatorios" });
         }
         const menu = new Menu(menuData);
         const menuStored = await menu.save();
+
         res.status(201).send(menuStored);
     } catch (error) {
         // Manejar errores específicos si es necesario
@@ -44,9 +45,9 @@ const updateMenu = async (req, res) => {
         }
 
         // Verificar si el usuario no ingresó título ni ruta
-        if (!menuData.title && !menuData.path) {
+        if (!menuData.label && !menuData.path) {
             // Mantener los valores anteriores
-            menuData.title = menu.title;
+            menuData.label = menu.label;
             menuData.path = menu.path;
         }
 
