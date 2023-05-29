@@ -27,6 +27,8 @@ const createRefreshToken = (user) => {
 }
 
 const decoded = (token) => {
+    const decoded = jwt.decode(token, JWT_SECRET_KEY, true);
+    console.log("decodificado: ", decoded);
     return jwt.decode(token, JWT_SECRET_KEY, true)
 }
 

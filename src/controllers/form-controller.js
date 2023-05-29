@@ -1,5 +1,4 @@
-const FormSchema = require('../models/form')
-const FormModel = mongoose.model('Form', FormSchema);
+const FormModel = require('../models/form')
 const formValues = require('../utils/formOptions')
 
 const formController = {
@@ -19,7 +18,7 @@ const formController = {
       } catch (error) {
           res.status(412).send(error.message);
       }  
-    }
+    },
 }
 
 module.exports = formController;

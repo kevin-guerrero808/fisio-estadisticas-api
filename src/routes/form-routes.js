@@ -1,10 +1,11 @@
 const express = require('express');
 const api = express.Router();
+const middleware_authentication = require("../middlewares/authenticated");
 
 const formController = require('../controllers/form-controller');
 
-api.get('/formInfo', formController.getValuesForm);
-api.post('/saveForm', formController.createForm);
+api.get('/formInfo', [middleware_authentication.ensureAuth], formController.getValuesForm);
+api.post('/saveForm', [middleware_authentication.ensureAuth], formController.createForm);
 
 
 
