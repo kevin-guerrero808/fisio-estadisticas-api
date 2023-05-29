@@ -1,8 +1,22 @@
 const axios = require('axios')
 const User = require('../models/user'); // Importamos el modelo de usuario
-//const mailgun = require('../utils/mail-gun')
+const bcrypt = require('bcryptjs')
+// const mailgun = require('../utils/mail-gun')
 
 const userController = {
+    getMe: async (req, res) => {
+        try {
+            const { user_id } = req.user;
+            const response = await User.findById(user_id)
+            if (!response) {
+                return res.status(400).send({ msg: "Can't be founded user"})
+            }
+            res.status(200).send(response)
+        } catch (error) {
+            res.status(500).send({ msg: 'Error on the server'})
+        }
+    },
+
     getAllUsers: async (req, res) => {
         try {
             const users = await User.find();
@@ -86,21 +100,17 @@ const userController = {
 
     deleteUser: async (req, res) => {
         const userId = req.params.id; 
-        try {
-            const user = await User.findByIdAndDelete(userId);
-            if (!user) {
-                if (!user) {
-                    return res.status(404).send('Usuario no encontrado');
-                }
-                res.send('Usuario eliminado correctamente');
+        User.findByIdAndDelete(userId)
+        .then(user => {
+            if(!user) {
+                res.send('No found user');
             }
-        } catch (error) {
-                res.status(500).send(error.message); 
-            }
+        })
+        .catch(error => {
+            res.send('Error to find user');
+        });
     },
-    
-   
-    }
+}
 
 
-    module.exports = userController;
+module.exports = userController;
