@@ -6,12 +6,8 @@ const FormSchema = mongoose.Schema({
     teacherName: String,
     practitionerName: {type: mongoose.Schema.Types.ObjectId, ref: 'User', require: true},//otro schema
     activityType: {type: Number, require: true},
-    group: {
-
-    },
-    individual: {
-        
-    }
+    group:Boolean,
+    individual: Boolean
 
 }, options)
 
@@ -32,11 +28,11 @@ const formIndividualSchema = mongoose.Schema({
     condition: { code: Number, name: String, description: String }
 }, options)
 
-const form = mongoose.model('Form', FormSchema);
-const formGroup = form.discriminator('FormGroup', formGroupalSchema)
-const formIndividual = form.discriminator('formIndividualSchema', formIndividualSchema)
+const Form = mongoose.model('Form', FormSchema);
+const FormGroup = Form.discriminator('FormGroup', formGroupalSchema)
+const FormIndividual = Form.discriminator('formIndividualSchema', formIndividualSchema)
 module.exports = {
-    form,
-    formGroup,
-    formIndividual
+    Form,
+    FormGroup,
+    FormIndividual
 }
